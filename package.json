@@ -1,0 +1,27 @@
+{
+    "name": "riot-api",
+    "version": "0.1.0",
+    "description": "Riot Games API library",
+    "author": "Martin Rump <admin@maddin.cc>",
+    "keywords": [
+        "API",
+        "Riot",
+        "Riot Games",
+        "LOL",
+        "League Of Legends"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/maddin77/riot-api.git"
+    },
+    "bugs": {
+        "url": "https://github.com/maddin77/riot-api/issues"
+    },
+    "main": "index",
+    "dependencies": {
+        "request": "2.29.0"
+    },
+    "engines": [
+        "node >= 0.8.0"
+    ]
+}
