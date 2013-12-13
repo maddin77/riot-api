@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "description": "Riot Games API library",
     "author": "Martin Rump <admin@maddin.cc>",
+	"homepage": "https://github.com/maddin77/riot-api",
     "keywords": [
         "API",
         "Riot",
