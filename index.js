@@ -202,7 +202,7 @@ RiotApi.prototype.getRunes = function(options, callback) {
 RiotApi.prototype.getSummonerNamesByIds = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     var summonerIds = (options.summonerIds||[]).join(',');
-    this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + summonerIds + '/name?api_key='+this.API_KEY, , function(json) {
+    this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + summonerIds + '/name?api_key='+this.API_KEY, function(json) {
         if(json.hasOwnProperty('status')) callback(json);
         else {
             callback(json.summoners);
