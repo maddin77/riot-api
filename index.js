@@ -3,6 +3,7 @@ var request = require('request');
 var RiotApi = module.exports = function(API_KEY) {
     this.API_KEY = API_KEY;
     this._cache = {};
+    this.BASE_PATH = 'http://prod.api.pvp.net/api/lol/';
 };
 
 RiotApi.prototype.getCachedJSONRequest = function(url, callback) {
@@ -32,10 +33,10 @@ RiotApi.prototype.getCachedJSONRequest = function(url, callback) {
         });
     }
 };
-
+// prod.api.pvp.net/api/lol/'+region+'/v1.3/summoner/by-name/'+name+'?api_key=' + auth.leagueoflegend.key/;
 RiotApi.prototype.getChampions = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
-    this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/champion?api_key='+this.API_KEY, function(json) {
+    this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.1/champion?api_key='+this.API_KEY, function(json) {
         if(json.hasOwnProperty('status')) callback(json);
         else if(options.hasOwnProperty('filter')) {
             var filtered = [];
@@ -59,14 +60,14 @@ RiotApi.prototype.getChampions = function(options, callback) {
 RiotApi.prototype.getRecentGames = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/game/by-summoner/' + options.summonerId + '/recent?api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.3/game/by-summoner/' + options.summonerId + '/recent?api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
         var self = this;
         this.getSummoner(options, function(json) {
             if(json.hasOwnProperty('status')) callback(json);
             else {
-                self.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/game/by-summoner/' + json.id + '/recent?api_key='+self.API_KEY, callback);
+                self.getCachedJSONRequest(self.BASE_PATH + region + '/v1.3/game/by-summoner/' + json.id + '/recent?api_key='+self.API_KEY, callback);
             }
         });
     }
@@ -78,20 +79,20 @@ RiotApi.prototype.getRecentGames = function(options, callback) {
 RiotApi.prototype.getSummoner = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + options.summonerId + '?api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.3/summoner/' + options.summonerId + '?api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
-         this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/by-name/' + options.summonerName + '?api_key='+this.API_KEY, callback);
-    }
-    else {
-        callback({});
-    }
+       this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.3/summoner/by-name/' + options.summonerName + '?api_key='+this.API_KEY, callback);
+   }
+   else {
+    callback({});
+}
 };
 
 RiotApi.prototype.getLeagues = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/' + region + '/v2.1/league/by-summoner/' + options.summonerId + '?api_key='+this.API_KEY, function(json) {
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v2.3/league/by-summoner/' + options.summonerId + '?api_key='+this.API_KEY, function(json) {
             if(json.hasOwnProperty('status')) callback(json);
             else if(options.hasOwnProperty('queue')) {
                 for(var type in json) {
@@ -111,7 +112,7 @@ RiotApi.prototype.getLeagues = function(options, callback) {
         this.getSummoner(options, function(json) {
             if(json.hasOwnProperty('status')) callback(json);
             else {
-                self.getCachedJSONRequest('http://prod.api.pvp.net/api/' + region + '/v2.1/league/by-summoner/' + json.id + '?api_key='+self.API_KEY, function(json) {
+                self.getCachedJSONRequest(self.BASE_PATH + region + '/v2.3/league/by-summoner/' + json.id + '?api_key='+self.API_KEY, function(json) {
                     if(error || json.hasOwnProperty('status')) callback(json);
                     else if(options.hasOwnProperty('queue')) {
                         for(var type in json) {
@@ -137,12 +138,12 @@ RiotApi.prototype.getStatsSummary = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     var season = options.season ? ('SEASON'+options.season) : '';
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/stats/by-summoner/' + options.summonerId + '/summary?season=' + season + '&api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.2/stats/by-summoner/' + options.summonerId + '/summary?season=' + season + '&api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
         var self = this;
         this.getSummoner(options, function(json) {
-            self.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/stats/by-summoner/' + json.id + '/summary?season=' + season + '&api_key='+self.API_KEY, callback);
+            self.getCachedJSONRequest(self.BASE_PATH + region + '/v1.2/stats/by-summoner/' + json.id + '/summary?season=' + season + '&api_key='+self.API_KEY, callback);
         });
     }
     else {
@@ -154,12 +155,12 @@ RiotApi.prototype.getRankedStats = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     var season = options.season ? ('SEASON'+options.season) : '';
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/stats/by-summoner/' + options.summonerId + '/ranked?season=' + season + '&api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.2/stats/by-summoner/' + options.summonerId + '/ranked?season=' + season + '&api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
         var self = this;
         this.getSummoner(options, function(json) {
-            self.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/stats/by-summoner/' + json.id + '/ranked?season=' + season + '&api_key='+self.API_KEY, callback);
+            self.getCachedJSONRequest(self.BASE_PATH + region + '/v1.2/stats/by-summoner/' + json.id + '/ranked?season=' + season + '&api_key='+self.API_KEY, callback);
         });
     }
     else {
@@ -170,12 +171,12 @@ RiotApi.prototype.getRankedStats = function(options, callback) {
 RiotApi.prototype.getMasteries = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + options.summonerId + '/masteries?api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.3/summoner/' + options.summonerId + '/masteries?api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
         var self = this;
         this.getSummoner(options, function(json) {
-            self.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + json.id + '/masteries?api_key='+self.API_KEY, callback);
+            self.getCachedJSONRequest(self.BASE_PATH + region + '/v1.3/summoner/' + json.id + '/masteries?api_key='+self.API_KEY, callback);
         });
     }
     else {
@@ -186,12 +187,12 @@ RiotApi.prototype.getMasteries = function(options, callback) {
 RiotApi.prototype.getRunes = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + options.summonerId + '/runes?api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.3/summoner/' + options.summonerId + '/runes?api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
         var self = this;
         this.getSummoner(options, function(json) {
-            self.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + json.id + '/runes?api_key='+self.API_KEY, callback);
+            self.getCachedJSONRequest(self.BASE_PATH + region + '/v1.3/summoner/' + json.id + '/runes?api_key='+self.API_KEY, callback);
         });
     }
     else {
@@ -202,7 +203,7 @@ RiotApi.prototype.getRunes = function(options, callback) {
 RiotApi.prototype.getSummonerNamesByIds = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     var summonerIds = (options.summonerIds||[]).join(',');
-    this.getCachedJSONRequest('http://prod.api.pvp.net/api/lol/' + region + '/v1.1/summoner/' + summonerIds + '/name?api_key='+this.API_KEY, function(json) {
+    this.getCachedJSONRequest(this.BASE_PATH + region + '/v1.3/summoner/' + summonerIds + '/name?api_key='+this.API_KEY, function(json) {
         if(json.hasOwnProperty('status')) callback(json);
         else {
             callback(json.summoners);
@@ -213,12 +214,12 @@ RiotApi.prototype.getSummonerNamesByIds = function(options, callback) {
 RiotApi.prototype.getTeams = function(options, callback) {
     var region = (options.region||'NA').toLowerCase();
     if(options.hasOwnProperty('summonerId')) {
-        this.getCachedJSONRequest('http://prod.api.pvp.net/api/' + region + '/v2.1/team/by-summoner/' + options.summonerId + '?api_key='+this.API_KEY, callback);
+        this.getCachedJSONRequest(this.BASE_PATH + region + '/v2.2/team/by-summoner/' + options.summonerId + '?api_key='+this.API_KEY, callback);
     }
     else if(options.hasOwnProperty('summonerName')) {
         var self = this;
         this.getSummoner(options, function(json) {
-            self.getCachedJSONRequest('http://prod.api.pvp.net/api/' + region + '/v2.1/team/by-summoner/' + json.id + '?api_key='+self.API_KEY, callback);
+            self.getCachedJSONRequest(self.BASE_PATH + region + '/v2.2/team/by-summoner/' + json.id + '?api_key='+self.API_KEY, callback);
         });
     }
     else {
